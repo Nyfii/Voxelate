@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Voxelate",
     "author": "Nyfii",
-    "version": (0, 1, 0),
+    "version": (1, 0, 0),
     "blender": (5, 1, 0),
     "location": "View3D > Add > Image",
     "description": "Create voxel meshes from images",

@@ -160,10 +160,13 @@ def generate_mesh_from_transparency_mask(
 
 
 def center_mesh(mesh: bpy.types.Object, image: bpy.types.Image) -> None:
-    # TODO: Currently assumes mesh is the object generated from image
+    # Looping here might be really slow. If I find that performance is bad
+    # this might be another point to look at
     width, height, _ = get_image_data(image)
-    mesh.location.x = -width / 2
-    mesh.location.y = -height / 2
+    for vertex in cast(bpy.types.Mesh, mesh.data).vertices:
+        vertex.co.x -= width / 2
+        vertex.co.y -= height / 2
+
 
 
 # This method requires a "blank" material as setup as it expects a
@@ -312,9 +315,25 @@ def create_voxel_mesh(
     uv_offset: float,
 ) -> bpy.types.Object:
     mesh: bpy.types.Object = generate_mesh_from_transparency_mask(image, name)
+    create_uv(mesh, image, uv_offset)
     if center:
         center_mesh(mesh, image)
     if do_create_material:
         create_material(mesh, image)
-    create_uv(mesh, image, uv_offset)
     return mesh
+
+
+if __name__ == "__main__":
+    create_voxel_mesh(
+        image=bpy.data.images.load(
+            os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "ExampleImage.png",
+            ),
+            check_existing=True,
+        ),
+        name="ExampleImage",
+        center=True,
+        do_create_material=True,
+        uv_offset=0.01,
+    )
